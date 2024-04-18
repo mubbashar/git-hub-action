@@ -1,4 +1,4 @@
-name: Test File changes
+name: Test File Changes
 on:
   push:
     branches: [ main ]
@@ -12,18 +12,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Count changed files in code folder
-        id: count-code-changes
-        run: |
-          CHANGED_FILE_COUNT=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -c '^code/')
-          echo "changed_count=$CHANGED_FILE_COUNT" >> $GITHUB_OUTPUT
+      - name: Count changed files in multiple folders
+        id: count-changes
+        run: bash ./scripts/count_changes.sh code images
+        env:
+          GITHUB_SHA: ${{ github.sha }}
 
-      - name: Print changed file count
+      - name: Print changed file counts
         run: |
-          echo "Number of changed files in 'code' folder: ${{ steps.count-code-changes.outputs.changed_count }}"
+          echo "Output from script:"
+          cat $GITHUB_OUTPUT
 
-      - name: Run code if there are changes
-        if: ${{ steps.count-code-changes.outputs.changed_count > 0 }}
+      - name: Run code if there are changes in code folder
+        if: ${{ steps.count-changes.outputs.code_count > 0  }}
         run: |
-          echo "Running additional steps because there are changes in the 'code' folder."
+          echo "Running additional steps because there are changes in code folders."
           # Add your custom commands here
+
+
+      - name: Run code if there are changes in images folder
+        if: ${{ steps.count-changes.outputs.images_count > 0 }}
+        run: |
+          echo "Running additional steps because there are changes in image folders."
+          # Add your custom commands here
+      
