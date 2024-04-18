@@ -9,15 +9,19 @@ if [ "$(git rev-list --count $commit_sha)" -eq "1" ]; then
     # It's the first commit, count all files in specified folder
     for folder in "$@"
     do
-        file_count=$(git ls-tree -r $commit_sha --name-only | grep -c "^$folder/")
-        echo "::set-output name=${folder}_count::$file_count"
+        # Normalize the folder name for output variables by replacing dashes with underscores
+        output_folder_name=$(echo "$folder" | tr '/' '_' | sed 's/-/_/g')
+        # Count files, ensuring to match the exact folder path
+        file_count=$(git ls-tree -r $commit_sha --name-only | grep -c "^$folder")
+        echo "${output_folder_name}_count=$file_count" >> $GITHUB_OUTPUT
     done
 else
     # Not the first commit, perform diff
     for folder in "$@"
     do
-        file_count=$(git diff-tree --no-commit-id --name-only -r $commit_sha | grep -c "^$folder/")
-        echo "::set-output name=${folder}_count::$file_count"
+        output_folder_name=$(echo "$folder" | tr '/' '_' | sed 's/-/_/g')
+        file_count=$(git diff-tree --no-commit-id --name-only -r $commit_sha | grep -c "^$folder")
+        echo "${output_folder_name}_count=$file_count" >> $GITHUB_OUTPUT
     done
 fi
 echo "::endgroup::"
