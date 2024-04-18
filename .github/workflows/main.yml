@@ -14,7 +14,7 @@ jobs:
 
       - name: Count changed files in multiple folders
         id: count-changes
-        run: bash ./scripts/count_changes.sh code images
+        run: bash ./scripts/count_changes.sh ${{ github.sha }} code images
         env:
           GITHUB_SHA: ${{ github.sha }}
 
