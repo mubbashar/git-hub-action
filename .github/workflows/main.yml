@@ -26,10 +26,8 @@ jobs:
         if: ${{ steps.count-changes.outputs.code_html_count > 0 }}
         run: |
           echo "Running additional steps because there are changes in html/code folders."
-          # Add your custom commands here
 
       - name: Run code if there are changes in images folder
         if: ${{ steps.count-changes.outputs.temp_images_count > 0 }}
         run: |
           echo "Running additional steps because there are changes in temp images folders."
-          # Add your custom commands here
