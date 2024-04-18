@@ -1,0 +1,32 @@
+name: Test File changes
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build-and-push:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get changed files
+        id: get-changed-files
+        run: |
+          git diff-tree --no-commit-id --name-only -r ${{ github.sha }}
+
+      - name: Check for changes in code folder
+        id: check-code
+        run: |
+          CHANGED_FOLDERS=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep 'code' || true)
+          echo "changed files start"
+          echo $CHANGED_FOLDERS
+          echo "changed files end"
+          if [ -n "$CHANGED_FOLDERS" ]; then
+            echo "::set-output name=changed::true"
+          else
+            echo "::set-output name=changed::false"
+          fi
+
+      - name: Print changed files
+        run: |
+          echo "Changed files:"
+          echo "${{ steps.get-changed-files.outputs.stdout }}"
+          echo "${{ steps.check-code.outputs.changed }}"
