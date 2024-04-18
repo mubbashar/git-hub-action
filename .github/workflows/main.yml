@@ -20,7 +20,7 @@ jobs:
 
       - name: Print changed file counts
         run: |
-          echo "Number of changed files in code folder: ${{ steps.count-changes.outputs.code_count }}, images folder: ${{ steps.count-changes.outputs.images_count }}"
+          echo "Number of changed files in code folder: ${{ steps.count-changes.outputs.code_html_count }}, images folder: ${{ steps.count-changes.outputs.temp_images_count }}"
 
       - name: Run code if there are changes in code folder
         if: ${{ steps.count-changes.outputs.code_html_count > 0 }}
