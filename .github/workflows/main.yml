@@ -20,19 +20,16 @@ jobs:
 
       - name: Print changed file counts
         run: |
-          echo "Output from script:"
-          cat $GITHUB_OUTPUT
+          echo "Number of changed files in code folder: ${{ steps.count-changes.outputs.code_count }}, images folder: ${{ steps.count-changes.outputs.images_count }}"
 
       - name: Run code if there are changes in code folder
-        if: ${{ steps.count-changes.outputs.code_count > 0  }}
+        if: ${{ steps.count-changes.outputs.code_count > 0 }}
         run: |
           echo "Running additional steps because there are changes in code folders."
           # Add your custom commands here
 
-
       - name: Run code if there are changes in images folder
         if: ${{ steps.count-changes.outputs.images_count > 0 }}
         run: |
-          echo "Running additional steps because there are changes in image folders."
+          echo "Running additional steps because there are changes in images folders."
           # Add your custom commands here
-      
