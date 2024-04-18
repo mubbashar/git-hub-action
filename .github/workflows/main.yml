@@ -7,26 +7,23 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Get changed files
-        id: get-changed-files
-        run: |
-          git diff-tree --no-commit-id --name-only -r ${{ github.sha }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Check for changes in code folder
-        id: check-code
+      - name: Count changed files in code folder
+        id: count-code-changes
         run: |
-          CHANGED_FOLDERS=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep 'code' || true)
-          echo "changed files start"
-          echo $CHANGED_FOLDERS
-          echo "changed files end"
-          if [ -n "$CHANGED_FOLDERS" ]; then
-            echo "::set-output name=changed::true"
-          else
-            echo "::set-output name=changed::false"
-          fi
+          CHANGED_FILE_COUNT=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep -c '^code/')
+          echo "changed_count=$CHANGED_FILE_COUNT" >> $GITHUB_OUTPUT
 
-      - name: Print changed files
+      - name: Print changed file count
         run: |
-          echo "Changed files:"
-          echo "${{ steps.get-changed-files.outputs.stdout }}"
-          echo "${{ steps.check-code.outputs.changed }}"
+          echo "Number of changed files in 'code' folder: ${{ steps.count-code-changes.outputs.changed_count }}"
+
+      - name: Run code if there are changes
+        if: ${{ steps.count-code-changes.outputs.changed_count > 0 }}
+        run: |
+          echo "Running additional steps because there are changes in the 'code' folder."
+          # Add your custom commands here
